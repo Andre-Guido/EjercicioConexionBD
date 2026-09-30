@@ -142,6 +142,6 @@ public class LibroController {
 
     @FXML
     private void actualizarRegistro(){
-
+        tblLibro.refresh();
     }
 }
