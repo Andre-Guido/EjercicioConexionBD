@@ -46,9 +46,25 @@ public class LibroController {
         configurarTabla();
         configurarComboBox();
         cargarLibros();
+
+        //Cada vez que se selecciona una fila del TableView, obtenemos ese objeto.
+        tblLibro.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+           if (newValue != null) {
+               cargarLibroSeleccionado(newValue);
+           }
+        });
     }
 
-    // Definir el tipo de dato que se escribe en cada celda del TableView
+    // Encargado de mapear los datos en los Textfields.
+    private void cargarLibroSeleccionado(Libro libro) {
+        txtTitulo.setText(libro.getTitulo());
+        txtAutor.setText(libro.getAutor());
+        cmbCategoria.setValue(libro.getCategoria());
+        txtPrecio.setText(String.valueOf(libro.getPrecio()));
+        txtStock.setText(String.valueOf(libro.getStock()));
+    }
+
+    // Definir el tipo de dato que se escribe en cada celda del TableView.
     private void configurarTabla() {
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colTitulo.setCellValueFactory(new PropertyValueFactory<>("titulo"));
@@ -141,7 +157,49 @@ public class LibroController {
     }
 
     @FXML
-    private void actualizarRegistro(){
+    private void actualizarTabla(){
         tblLibro.refresh();
+    }
+
+    @FXML
+    private void actualizarRegistro(){
+
+    }
+
+    @FXML
+    private void eliminarRegistro(){
+        Libro libroSeleccionado = tblLibro.getSelectionModel().getSelectedItem();
+        if(libroSeleccionado != null){
+            mostrarAlerta(
+                    Alert.AlertType.WARNING,
+                    "Selección requerida",
+                    "No hay libro seleccionado",
+                    "Seleccione u libor del TableView"
+            );
+            return;
+        }
+
+        if(!validarCampos()){
+            return;
+        }
+
+        Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmacion.setTitle("Confirmacion");
+        confirmacion.setHeaderText(null);
+        confirmacion.setContentText("¿Está seguro que desea eliminar el registro de libro?");
+        if (confirmacion.showAndWait().isEmpty() || confirmacion.getResult() != ButtonType.OK) {
+            return;
+        }
+
+        // Eliminación física - borrar la fila de la tabla
+        String sql = "DELETE FROM libro WHERE id=?";
+        try(
+                Connection connection = DatabaseConnection.getConnection();
+                PreparedStatement statement = connection.prepareStatement(sql);
+                ){
+            statement.setInt(1, libroSeleccionado.getId());
+        }catch (SQLException ex){
+            ex.printStackTrace();
+        }
     }
 }

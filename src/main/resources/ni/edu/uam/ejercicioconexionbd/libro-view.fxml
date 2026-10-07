@@ -78,7 +78,17 @@
                         <Font name="Times New Roman Bold" size="14.0" />
                      </font>
                   </Button>
-                  <Button fx:id="btnActualizar" mnemonicParsing="false" onAction="#actualizarRegistro" text="Actualizar">
+                  <Button fx:id="btnActualizar" mnemonicParsing="false" onAction="#actualizarTabla" text="Actualizar Tabla">
+                     <font>
+                        <Font name="Times New Roman Bold" size="14.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="btnActRegistro" mnemonicParsing="false" onAction="#actualizarRegistro" text="Actualizar Registro">
+                     <font>
+                        <Font name="Times New Roman Bold" size="14.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="btnEliminar" mnemonicParsing="false" onAction="#eliminarRegistro" text="Eliminar">
                      <font>
                         <Font name="Times New Roman Bold" size="14.0" />
                      </font>
