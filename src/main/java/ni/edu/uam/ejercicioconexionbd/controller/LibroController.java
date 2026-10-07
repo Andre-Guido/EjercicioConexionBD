@@ -163,7 +163,47 @@ public class LibroController {
 
     @FXML
     private void actualizarRegistro(){
+        Libro libroSeleccionado = tblLibro.getSelectionModel().getSelectedItem();
+        if(libroSeleccionado != null){
+            mostrarAlerta(
+                    Alert.AlertType.WARNING,
+                    "Selección requerida",
+                    "No hay libro seleccionado",
+                    "Seleccione u libor del TableView"
+            );
+            return;
+        }
 
+        if (!validarCampos()){
+            return;
+        }
+
+        String sql = "UPDATE libro SET titulo=?, autor=?, categoria=?, precio=?, stock=? WHERE id=?";
+        try(
+                Connection connection = DatabaseConnection.getConnection();
+                PreparedStatement statement = connection.prepareStatement(sql);
+                ){
+            statement.setString(1, txtTitulo.getText());
+            statement.setString(2, txtAutor.getText());
+            statement.setString(3, cmbCategoria.getValue());
+            statement.setDouble(4, Double.parseDouble(txtPrecio.getText()));
+            statement.setInt(5, Integer.parseInt(txtStock.getText()));
+            statement.setInt(6, libroSeleccionado.getId());
+
+            int filasActualizadas = statement.executeUpdate();
+            if (filasActualizadas > 0){
+                mostrarAlerta(
+                        Alert.AlertType.INFORMATION,
+                        "Registro actualizado",
+                        "Actualización completada",
+                        "El libro fue actualizado exitosamente"
+                );
+                limpiarRegistro();
+                cargarLibros();
+            }
+        }catch (SQLException ex){
+            ex.printStackTrace();
+        }
     }
 
     @FXML
@@ -198,6 +238,17 @@ public class LibroController {
                 PreparedStatement statement = connection.prepareStatement(sql);
                 ){
             statement.setInt(1, libroSeleccionado.getId());
+            int filasEliminadas = statement.executeUpdate();
+            if(filasEliminadas > 0){
+                mostrarAlerta(
+                        Alert.AlertType.INFORMATION,
+                        "Registro eliminado",
+                        "Eliminación completada",
+                        "El libro fue eliminado exitosamente"
+                );
+                limpiarRegistro();
+                cargarLibros();
+            }
         }catch (SQLException ex){
             ex.printStackTrace();
         }
